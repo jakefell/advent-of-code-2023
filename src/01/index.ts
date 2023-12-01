@@ -14,24 +14,6 @@ const textDigits = [
   { text: "nine", digit: 9 },
 ];
 
-const __dirname = path.dirname(fileURLToPath(import.meta.url));
-
-const input = await fs.readFile(path.join(__dirname, "input.txt"), {
-  encoding: "utf8",
-});
-
-const lines = input.split("\n");
-
-let total = 0;
-
-let i = 0;
-for (const line of lines) {
-  const value = +`${getFirstDigit(line)}${getLastDigit(line)}`;
-  total += value;
-}
-
-console.log({ total });
-
 function getFirstDigit(value: string) {
   let digitIndex = 0;
 
@@ -45,15 +27,11 @@ function getFirstDigit(value: string) {
   const valueTextDigits = getSortedTextDigits(value);
 
   const minTextDigit = valueTextDigits.at(0);
-  if (!minTextDigit) {
+  if (!minTextDigit || minTextDigit.startIndex > digitIndex) {
     return +value[digitIndex];
   }
 
-  if (minTextDigit.startIndex < digitIndex) {
-    return minTextDigit.text.digit;
-  }
-
-  return +value[digitIndex];
+  return minTextDigit.text.digit;
 }
 
 function getLastDigit(value: string) {
@@ -69,15 +47,11 @@ function getLastDigit(value: string) {
   const valueTextDigits = getSortedTextDigits(value);
 
   const maxTextDigit = valueTextDigits.at(valueTextDigits.length - 1);
-  if (!maxTextDigit) {
+  if (!maxTextDigit || maxTextDigit.startIndex < digitIndex) {
     return +value[digitIndex];
   }
 
-  if (maxTextDigit.startIndex > digitIndex) {
-    return maxTextDigit.text.digit;
-  }
-
-  return +value[digitIndex];
+  return maxTextDigit.text.digit;
 }
 
 function getSortedTextDigits(value: string) {
@@ -119,3 +93,20 @@ function getIndicesOf(search: string, value: string) {
 
   return indices;
 }
+
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
+
+const input = await fs.readFile(path.join(__dirname, "input.txt"), {
+  encoding: "utf8",
+});
+
+const lines = input.split("\n");
+
+let total = 0;
+
+for (const line of lines) {
+  const value = +`${getFirstDigit(line)}${getLastDigit(line)}`;
+  total += value;
+}
+
+console.log({ total });
